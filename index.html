@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>UTM Link Builder</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <style>
+    body {
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      max-width: 700px;
+      margin: 2rem auto;
+      padding: 0 1rem;
+    }
+
+    h1 {
+      font-size: 1.8rem;
+      margin-bottom: 0.5rem;
+    }
+
+    p {
+      margin-top: 0;
+      color: #555;
+    }
+
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: 600;
+    }
+
+    input {
+      width: 100%;
+      padding: 0.5rem;
+      margin-top: 0.25rem;
+      box-sizing: border-box;
+    }
+
+    .small {
+      font-size: 0.85rem;
+      color: #777;
+    }
+
+    button {
+      margin-top: 1.5rem;
+      padding: 0.6rem 1.2rem;
+      font-size: 1rem;
+      border-radius: 4px;
+      border: 1px solid #333;
+      background: #333;
+      color: white;
+      cursor: pointer;
+    }
+
+    button:hover {
+      opacity: 0.9;
+    }
+
+    #resultWrapper {
+      margin-top: 2rem;
+      padding: 1rem;
+      border: 1px solid #ddd;
+      background: #fafafa;
+      display: none;
+    }
+
+    #resultUrl {
+      width: 100%;
+      height: 90px;
+      box-sizing: border-box;
+      padding: 0.5rem;
+      font-family: monospace;
+      font-size: 0.9rem;
+    }
+
+    #copyBtn {
+      margin-top: 0.5rem;
+      padding: 0.4rem 0.8rem;
+      font-size: 0.9rem;
+      border-radius: 4px;
+      border: 1px solid #555;
+      background: #fff;
+      cursor: pointer;
+    }
+
+    #copyMsg {
+      margin-left: 0.5rem;
+      font-size: 0.85rem;
+      color: #2f7d32;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>UTM Link Builder</h1>
+  <p>Enter your URL and campaign info, then copy the tracking link.</p>
+
+  <label for="baseUrl">Base URL (required)</label>
+  <input id="baseUrl" type="url" placeholder="https://example.com/landing-page">
+
+  <label for="source">utm_source (required)</label>
+  <input id="source" type="text" placeholder="facebook, newsletter, google">
+
+  <label for="medium">utm_medium (required)</label>
+  <input id="medium" type="text" placeholder="cpc, email, social">
+
+  <label for="campaign">utm_campaign (required)</label>
+  <input id="campaign" type="text" placeholder="black_friday_2025">
+
+  <label for="term">utm_term (optional)</label>
+  <input id="term" type="text" placeholder="keyword or ad group">
+
+  <label for="content">utm_content (optional)</label>
+  <input id="content" type="text" placeholder="version_a, image_test, etc">
+
+  <button id="buildBtn">Build UTM URL</button>
+
+  <div id="resultWrapper">
+    <h2>Your UTM URL</h2>
+    <textarea id="resultUrl" readonly></textarea>
+    <div>
+      <button id="copyBtn" type="button">Copy to clipboard</button>
+      <span id="copyMsg">Copied</span>
+    </div>
+    <p class="small">Tip: Save this URL in your campaign sheet or notes.</p>
+  </div>
+
+  <script>
+    function buildUtmUrl() {
+      var baseUrl = document.getElementById("baseUrl").value.trim();
+      var source = document.getElementById("source").value.trim();
+      var medium = document.getElementById("medium").value.trim();
+      var campaign = document.getElementById("campaign").value.trim();
+      var term = document.getElementById("term").value.trim();
+      var content = document.getElementById("content").value.trim();
+
+      if (!baseUrl || !source || !medium || !campaign) {
+        alert("Please fill in base URL, source, medium, and campaign.");
+        return;
+      }
+
+      // Check if the URL already has query parameters
+      var separator = baseUrl.indexOf("?") === -1 ? "?" : "&";
+
+      var params = [];
+      params.push("utm_source=" + encodeURIComponent(source));
+      params.push("utm_medium=" + encodeURIComponent(medium));
+      params.push("utm_campaign=" + encodeURIComponent(campaign));
+
+      if (term) {
+        params.push("utm_term=" + encodeURIComponent(term));
+      }
+      if (content) {
+        params.push("utm_content=" + encodeURIComponent(content));
+      }
+
+      var fullUrl = baseUrl + separator + params.join("&");
+
+      var resultWrapper = document.getElementById("resultWrapper");
+      var resultUrl = document.getElementById("resultUrl");
+
+      resultUrl.value = fullUrl;
+      resultWrapper.style.display = "block";
+
+      // Reset copy message
+      document.getElementById("copyMsg").style.display = "none";
+    }
+
+    function copyResult() {
+      var textarea = document.getElementById("resultUrl");
+      textarea.select();
+      textarea.setSelectionRange(0, 99999); // for mobile
+      var ok = document.execCommand("copy");
+
+      if (ok) {
+        document.getElementById("copyMsg").style.display = "inline";
+      }
+    }
+
+    document.getElementById("buildBtn").addEventListener("click", buildUtmUrl);
+    document.getElementById("copyBtn").addEventListener("click", copyResult);
+  </script>
+
+</body>
+</html>
